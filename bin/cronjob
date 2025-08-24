@@ -1,0 +1,17 @@
+<?php
+
+use Auguzsto\Job\Job;
+use Auguzsto\Cronjob\Cronjob;
+
+
+$autoload = __DIR__ . "/../vendor/autoload.php";
+
+if (!file_exists($autoload)) {
+    $autoload = __DIR__ . "/../autoload.php";
+}
+
+require_once $autoload;
+
+$cronjob = json_decode(file_get_contents(__DIR__ . "/../cronjob.json"));
+$job = new Job(Cronjob::class, "up", [json_encode($cronjob->task)]);
+$job->execute();

@@ -1,0 +1,6 @@
+{
+    "task": {
+        "pathAboslute": "/usr/src/myapp/src/Tasks",
+        "namespace": "Auguzsto\\Cronjob\\Tasks"
+    }
+}

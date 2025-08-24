@@ -1,0 +1,8 @@
+services:
+  cronjob-dev:
+    container_name: cronjob-dev
+    build:
+      context: .
+      dockerfile: ./.docker/Dockerfile
+    volumes:
+      - ./:/usr/src/myapp:rw

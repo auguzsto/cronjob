@@ -1,0 +1,27 @@
+{
+    "name": "auguzsto/cronjob",
+    "description": "Run scheduled tasks.",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Auguzsto\\Cronjob\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Matheus Augusto",
+            "email": "auguzsto@gmail.com"
+        }
+    ],
+    "bin": [
+        "bin/cronjob"
+    ],
+    "require": {
+        "auguzsto/job": "^0.0.2",
+        "poliander/cron": "^3.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^12.3"
+    }
+}
