@@ -18,7 +18,7 @@
         "bin/cronjob"
     ],
     "require": {
-        "auguzsto/job": "^0.0.2",
+        "auguzsto/job": "^0.0.3",
         "poliander/cron": "^3.2"
     },
     "require-dev": {

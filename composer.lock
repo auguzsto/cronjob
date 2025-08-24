@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "86eceff3e46a68402c6eaadc10a94ca9",
+    "content-hash": "ab71873a0e03d410e89d1ed92d52eed9",
     "packages": [
         {
             "name": "auguzsto/job",
-            "version": "0.0.2",
+            "version": "0.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/auguzsto/job.git",
-                "reference": "1f24b9312eead8a1fcf024790a1386fbb4c24255"
+                "reference": "acf8d19ea1b91976f0aadfbe1ce4b9d5fe7f13ee"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/auguzsto/job/zipball/1f24b9312eead8a1fcf024790a1386fbb4c24255",
-                "reference": "1f24b9312eead8a1fcf024790a1386fbb4c24255",
+                "url": "https://api.github.com/repos/auguzsto/job/zipball/acf8d19ea1b91976f0aadfbe1ce4b9d5fe7f13ee",
+                "reference": "acf8d19ea1b91976f0aadfbe1ce4b9d5fe7f13ee",
                 "shasum": ""
             },
             "require": {
@@ -47,9 +47,9 @@
             "description": "A simple and elegant tool for running background processes without the need for external libraries. Linux only.",
             "support": {
                 "issues": "https://github.com/auguzsto/job/issues",
-                "source": "https://github.com/auguzsto/job/tree/0.0.2"
+                "source": "https://github.com/auguzsto/job/tree/0.0.3"
             },
-            "time": "2025-08-22T19:52:33+00:00"
+            "time": "2025-08-24T18:01:52+00:00"
         },
         {
             "name": "poliander/cron",
