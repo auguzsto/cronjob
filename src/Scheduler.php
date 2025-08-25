@@ -16,7 +16,8 @@ class Scheduler implements SchedulerInterface
     {
         $this->setCronParser(new CronParser($cronExpression));
         $this->setTask($task);
-        $this->next();
+        $this->runScheduledTask();
+        $this->scheduleTask();
     }
 
     public function setTask(TaskInterface $taskInterface): void
@@ -39,19 +40,12 @@ class Scheduler implements SchedulerInterface
         return $this->cron;
     }
 
-    public function next(): void
+    public function scheduleTask(): void
     {
         $nextTimestamp = $this->cron->getNext();
         $datetime = new DateTime();
         $datetime->setTimestamp($nextTimestamp);
-        $this->runScheduledTask($datetime);
-        $this->saveNext($datetime);
 
-    }
-
-    public function saveNext(DateTime $datetime): void
-    {
-       
         $dir = __DIR__ . "/.scheduler";
         if (!is_dir($dir)) {
             mkdir($dir);
@@ -68,8 +62,11 @@ class Scheduler implements SchedulerInterface
         file_put_contents($filetasks, $next, FILE_APPEND | LOCK_EX);
     }
 
-    private function runScheduledTask(DateTime $datetime): void
+    public function runScheduledTask(): void
     {
+        $nextTimestamp = $this->cron->getNext();
+        $datetime = new DateTime();
+        $datetime->setTimestamp($nextTimestamp);
         $taskclass = $this->task::class;
         $filetask = __DIR__ . "/.scheduler/$taskclass";
 
