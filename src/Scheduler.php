@@ -1,47 +1,57 @@
 <?php
 namespace Auguzsto\Cronjob;
 
-use Auguzsto\Job\Job;
 use DateTime;
-use Poliander\Cron\CronExpression;
+use Auguzsto\Job\Job;
+use Auguzsto\Cronjob\CronParser;
 use Auguzsto\Cronjob\TaskInterface;
+use Auguzsto\Cronjob\CronParserInterface;
 
 class Scheduler implements SchedulerInterface
 {
-    private string $crontab;
+    private CronParserInterface $cron;
     private TaskInterface $task;
 
-    public function __construct(string $crontab, TaskInterface $task)
+    public function __construct(string $cronExpression, TaskInterface $task)
     {
-        $this->set($crontab);
-        $this->task = $task;
+        $this->setCronParser(new CronParser($cronExpression));
+        $this->setTask($task);
         $this->next();
     }
 
-    private function set(string $crontab): void
+    public function setTask(TaskInterface $taskInterface): void
     {
-        $this->crontab = $crontab;
+        $this->task = $taskInterface;
     }
 
-    public function get(): string
+    public function getTask(): TaskInterface
     {
-        return $this->crontab;
+        return $this->task;
+    }
+
+    public function setCronParser(CronParserInterface $cronParserInterface): void
+    {
+        $this->cron = $cronParserInterface;
+    }
+
+    public function getCronParser(): CronParserInterface
+    {
+        return $this->cron;
     }
 
     public function next(): void
     {
-        $cronExpression = new CronExpression($this->get());
-        $nextTimestamp = $cronExpression->getNext();
-
+        $nextTimestamp = $this->cron->getNext();
         $datetime = new DateTime();
         $datetime->setTimestamp($nextTimestamp);
+        $this->runScheduledTask($datetime);
         $this->saveNext($datetime);
 
     }
 
     public function saveNext(DateTime $datetime): void
     {
-        $this->runScheduledTask($datetime);
+       
         $dir = __DIR__ . "/.scheduler";
         if (!is_dir($dir)) {
             mkdir($dir);

@@ -20,7 +20,6 @@ class Cronjob
                 $job = new Job($instance::class, "toScheduler");
                 $job->execute();
             }
-
             sleep(1);
         }
     }
