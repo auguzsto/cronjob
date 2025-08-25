@@ -12,9 +12,10 @@ class Scheduler implements SchedulerInterface
     private CronParserInterface $cron;
     private TaskInterface $task;
 
-    public function __construct(string $cronExpression, TaskInterface $task)
+    public function __construct(string $cronExpression, TaskInterface $task, CronParserInterface $cron = new CronParser())
     {
-        $this->setCronParser(new CronParser($cronExpression));
+        $this->cron = $cron;
+        $this->cron->setExpression($cronExpression);
         $this->setTask($task);
         $this->runScheduledTask();
         $this->scheduleTask();
@@ -28,16 +29,6 @@ class Scheduler implements SchedulerInterface
     public function getTask(): TaskInterface
     {
         return $this->task;
-    }
-
-    public function setCronParser(CronParserInterface $cronParserInterface): void
-    {
-        $this->cron = $cronParserInterface;
-    }
-
-    public function getCronParser(): CronParserInterface
-    {
-        return $this->cron;
     }
 
     public function scheduleTask(): void
