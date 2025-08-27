@@ -2,6 +2,7 @@
 
 use Auguzsto\Job\Job;
 use Auguzsto\Cronjob\Cronjob;
+use Auguzsto\Job\Worker;
 
 
 $autoload = __DIR__ . "/../vendor/autoload.php";
@@ -12,6 +13,15 @@ if (!file_exists($autoload)) {
 
 require_once $autoload;
 
-$cronjob = json_decode(file_get_contents(__DIR__ . "/../cronjob.json"));
-$job = new Job(Cronjob::class, "up", [json_encode($cronjob->task)]);
-$job->execute();
+if ($argv[1] == "start") {
+    Worker::up(20);
+    $cronjob = json_decode(file_get_contents(__DIR__ . "/../cronjob.json"));
+    $job = new Job(Cronjob::class, "up", [json_encode($cronjob->task)]);
+    $job->execute();
+    print "All ready!" . PHP_EOL;
+}
+
+if ($argv[1] == "stop") {
+    Worker::down();
+    print "All stopped!" . PHP_EOL;
+}

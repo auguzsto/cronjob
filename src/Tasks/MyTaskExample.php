@@ -7,9 +7,9 @@ use Auguzsto\Cronjob\SchedulerInterface;
 
 class MyTaskExample implements TaskInterface
 {
-    public static function toScheduler(): SchedulerInterface
+    public static function toScheduler(SchedulerInterface $scheduler): void 
     {
-        return new Scheduler("* * * * *", new self);
+        $scheduler->on("* * * * *", new self);
     }
 
     public static function onTask(): void

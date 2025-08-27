@@ -17,7 +17,7 @@ class Cronjob
                 $classNamespace = "\\{$task->namespace}\\$classWithoutExtension";
                 
                 $instance = new $classNamespace();
-                $job = new Job($instance::class, "toScheduler");
+                $job = new Job($instance::class, "toScheduler", [new Scheduler()]);
                 $job->execute();
             }
             sleep(1);

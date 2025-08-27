@@ -10,4 +10,5 @@ interface SchedulerInterface
     public function getTask(): TaskInterface;
     public function scheduleTask(): void;
     public function runScheduledTask(): void;
+    public function on(string $cronExpression, TaskInterface $task, CronParserInterface $cron = new CronParser()): void;
 }

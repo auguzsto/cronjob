@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ab71873a0e03d410e89d1ed92d52eed9",
+    "content-hash": "00430c1ffe47d7d7e70549bb61562742",
     "packages": [
         {
             "name": "auguzsto/job",
-            "version": "0.0.3",
+            "version": "1.0.0.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/auguzsto/job.git",
-                "reference": "acf8d19ea1b91976f0aadfbe1ce4b9d5fe7f13ee"
+                "reference": "6c4b89644bb7e21069f5f742ecdb0b11f917837c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/auguzsto/job/zipball/acf8d19ea1b91976f0aadfbe1ce4b9d5fe7f13ee",
-                "reference": "acf8d19ea1b91976f0aadfbe1ce4b9d5fe7f13ee",
+                "url": "https://api.github.com/repos/auguzsto/job/zipball/6c4b89644bb7e21069f5f742ecdb0b11f917837c",
+                "reference": "6c4b89644bb7e21069f5f742ecdb0b11f917837c",
                 "shasum": ""
             },
             "require": {
@@ -27,6 +27,9 @@
             "require-dev": {
                 "phpunit/phpunit": "^12"
             },
+            "bin": [
+                "src/worker"
+            ],
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -44,12 +47,12 @@
                     "email": "auguzsto@gmail.com"
                 }
             ],
-            "description": "A simple and elegant tool for running background processes without the need for external libraries. Linux only.",
+            "description": "A simple and elegant tool for running background processes without the need for external libraries.",
             "support": {
                 "issues": "https://github.com/auguzsto/job/issues",
-                "source": "https://github.com/auguzsto/job/tree/0.0.3"
+                "source": "https://github.com/auguzsto/job/tree/1.0.0"
             },
-            "time": "2025-08-24T18:01:52+00:00"
+            "time": "2025-08-27T02:15:54+00:00"
         },
         {
             "name": "poliander/cron",
@@ -1738,7 +1741,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": {
+        "auguzsto/job": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {},
