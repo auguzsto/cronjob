@@ -14,7 +14,6 @@ if (!file_exists($autoload)) {
 require_once $autoload;
 
 if ($argv[1] == "start") {
-    Worker::up(20);
     $cronjob = json_decode(file_get_contents(__DIR__ . "/../cronjob.json"));
     $job = new Job(Cronjob::class, "up", [json_encode($cronjob->task)]);
     $job->execute();
