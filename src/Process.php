@@ -1,8 +1,8 @@
 <?php
+namespace Auguzsto\Cronjob;
 
-enum SchedulerProcess
+abstract class Process
 {
     public const string SCHEDULED = "scheduled";
     public const string DONE = "done";
-
 }
