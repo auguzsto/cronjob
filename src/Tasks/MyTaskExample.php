@@ -1,7 +1,6 @@
 <?php
 namespace Auguzsto\Cronjob\Tasks;
 
-use Auguzsto\Cronjob\Scheduler;
 use Auguzsto\Cronjob\TaskInterface;
 use Auguzsto\Cronjob\SchedulerInterface;
 

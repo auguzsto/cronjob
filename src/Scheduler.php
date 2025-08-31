@@ -40,6 +40,7 @@ class Scheduler implements SchedulerInterface
         $nextTimestamp = $this->cron->getNext();
         $datetime = new DateTime();
         $datetime->setTimestamp($nextTimestamp);
+        $next = $datetime->format("Y-m-d H:i");
 
         $dir = __DIR__ . "/.scheduler";
         if (!is_dir($dir)) {
@@ -49,19 +50,40 @@ class Scheduler implements SchedulerInterface
         $taskclass = $this->task::class;
         $filetasks = "$dir/$taskclass";
 
-        if (is_file($filetasks)) {
+        $schedule = [
+            [
+                "next" => $next,
+                "process" => "scheduled"
+            ]
+        ];
+
+        if (!is_file($filetasks)) {
+            file_put_contents($filetasks, json_encode($schedule));
             return;
         }
 
-        $next = $datetime->format("Y-m-d H:i") . PHP_EOL;
-        file_put_contents($filetasks, $next, FILE_APPEND | LOCK_EX);
+        if (is_file($filetasks)) {
+            $schedules = json_decode(file_get_contents($filetasks));
+            $lastIndex = array_key_last($schedules);
+            $lastScheduled = $schedules[$lastIndex];
+
+            if ($lastScheduled->process == "scheduled") {
+                return;
+            }
+
+            if ($lastScheduled->process == "done") {
+                array_push($schedules, [
+                    "next" => $next,
+                    "process" => "scheduled"
+                ]);
+
+                file_put_contents($filetasks, json_encode($schedules));
+            }
+        }
     }
 
     public function runScheduledTask(): void
     {
-        $nextTimestamp = $this->cron->getNext();
-        $datetime = new DateTime();
-        $datetime->setTimestamp($nextTimestamp);
         $taskclass = $this->task::class;
         $filetask = __DIR__ . "/.scheduler/$taskclass";
 
@@ -69,23 +91,19 @@ class Scheduler implements SchedulerInterface
             return;
         }
 
-        $fopen = @fopen($filetask, "r");
-        if ($fopen) {
-            while (($buffer = fgets($fopen, 4096)) !== false) {
-                $now = date("Y-m-d H:i");
-                if ($now == trim($buffer)) {
-                    $job = new Job($taskclass, "onTask");
-                    $job->execute();
-                    unlink($filetask);
-                }
+        $schedules = json_decode(file_get_contents($filetask));
+        $lastIndex = array_key_last($schedules);
 
-                $nextExpected = $datetime->format("Y-m-d H:i");
-                if ($buffer != $nextExpected) {
-                    unlink($filetask);
-                }
+        if ($schedules[$lastIndex]->process == "scheduled") {
+            $now = date("Y-m-d H:i");
+            if ($schedules[$lastIndex]->next == $now) {
+                $job = new Job($taskclass, "onTask");
+                $job->execute();
+                $lastIndex = array_key_last($schedules);
+                $schedules[$lastIndex]->process = "done";
+                file_put_contents($filetask, json_encode($schedules));
             }
-
-            fclose($fopen);
+            
         }
     }
 }
