@@ -6,6 +6,7 @@ use Auguzsto\Job\Job;
 use Auguzsto\Cronjob\CronParser;
 use Auguzsto\Cronjob\TaskInterface;
 use Auguzsto\Cronjob\CronParserInterface;
+use SchedulerProcess;
 
 class Scheduler implements SchedulerInterface
 {
@@ -53,7 +54,7 @@ class Scheduler implements SchedulerInterface
         $schedule = [
             [
                 "next" => $next,
-                "process" => "scheduled"
+                "process" => SchedulerProcess::SCHEDULED
             ]
         ];
 
@@ -67,11 +68,11 @@ class Scheduler implements SchedulerInterface
             $lastIndex = array_key_last($schedules);
             $lastScheduled = $schedules[$lastIndex];
 
-            if ($lastScheduled->process == "scheduled") {
+            if ($lastScheduled->process == SchedulerProcess::SCHEDULED) {
                 return;
             }
 
-            if ($lastScheduled->process == "done") {
+            if ($lastScheduled->process == SchedulerProcess::DONE) {
                 array_push($schedules, [
                     "next" => $next,
                     "process" => "scheduled"
@@ -94,13 +95,13 @@ class Scheduler implements SchedulerInterface
         $schedules = json_decode(file_get_contents($filetask));
         $lastIndex = array_key_last($schedules);
 
-        if ($schedules[$lastIndex]->process == "scheduled") {
+        if ($schedules[$lastIndex]->process == SchedulerProcess::SCHEDULED) {
             $now = date("Y-m-d H:i");
             if ($schedules[$lastIndex]->next == $now) {
                 $job = new Job($taskclass, "onTask");
                 $job->execute();
                 $lastIndex = array_key_last($schedules);
-                $schedules[$lastIndex]->process = "done";
+                $schedules[$lastIndex]->process = SchedulerProcess::DONE;
                 file_put_contents($filetask, json_encode($schedules));
             }
             

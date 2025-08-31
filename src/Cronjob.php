@@ -2,6 +2,7 @@
 namespace Auguzsto\Cronjob;
 
 use Auguzsto\Job\Job;
+use Auguzsto\Cronjob\Scheduler;
 
 class Cronjob
 {
