@@ -8,7 +8,7 @@ use Auguzsto\Job\Worker;
 $autoload = __DIR__ . "/../vendor/autoload.php";
 
 if (!file_exists($autoload)) {
-    $autoload = __DIR__ . "/../autoload.php";
+    $autoload = $GLOBALS['_composer_autoload_path'];
 }
 
 require_once $autoload;
