@@ -1,5 +1,8 @@
 FROM php:8.3-cli-alpine
 
+RUN apk add --no-cache tzdata
+ENV TZ=America/Sao_Paulo
+
 ARG HOST_UID=1000
 ARG HOST_GID=1000
 
