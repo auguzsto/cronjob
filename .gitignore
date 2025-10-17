@@ -2,3 +2,5 @@ vendor
 .scheduler
 *.txt
 example
+cronjob.mock
+.phpunit.result.cache

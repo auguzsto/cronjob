@@ -6,7 +6,8 @@
     "version": "0.0.2",
     "autoload": {
         "psr-4": {
-            "Auguzsto\\Cronjob\\": "src/"
+            "Auguzsto\\Cronjob\\": "src/",
+            "Auguzsto\\Cronjob\\Tests\\": "tests/"
         }
     },
     "authors": [

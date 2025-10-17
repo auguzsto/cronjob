@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1fbe23f3ddda29c0b48de988d0d2be4d",
+    "content-hash": "f74ccafad0a1f280d2bc014e275817c0",
     "packages": [
         {
             "name": "auguzsto/job",

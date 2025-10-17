@@ -1,8 +1,8 @@
 <?php
 
 use Auguzsto\Job\Job;
-use Auguzsto\Cronjob\Cronjob;
 use Auguzsto\Job\Worker;
+use Auguzsto\Cronjob\Cronjob;
 
 
 $autoload = __DIR__ . "/../vendor/autoload.php";
@@ -14,9 +14,13 @@ if (!file_exists($autoload)) {
 require_once $autoload;
 
 if ($argv[1] == "start") {
-    if (!is_dir("tasks")) {
-        echo "Before creating a task, initialize the repository." . PHP_EOL;
-        echo "vendor/bin/cronjob init" . PHP_EOL;;
+    if (empty($_SERVER["CRONJOB_TASKS_DIR"])) {
+        echo "Error: Environment variable 'CRONJOB_TASKS_DIR' is not set." . PHP_EOL;
+        exit;
+    }
+
+    if (!is_dir($_SERVER["CRONJOB_TASKS_DIR"])) {
+        echo "Error: Task folder not found." . PHP_EOL;
         exit;
     }
 
@@ -25,19 +29,14 @@ if ($argv[1] == "start") {
     print "All ready!" . PHP_EOL;
 }
 
-if ($argv[1] == "stop") {
-    Worker::down();
-    print "All stopped!" . PHP_EOL;
-}
-
-if ($argv[1] == "init") {
-    mkdir("tasks");
-}
-
 if ($argv[1] == "create") {
-    if (!is_dir("tasks")) {
-        echo "Before creating a task, initialize the repository." . PHP_EOL;
-        echo "vendor/bin/cronjob init" . PHP_EOL;;
+   if (empty($_SERVER["CRONJOB_TASKS_DIR"])) {
+        echo "Error: Environment variable 'CRONJOB_TASKS_DIR' is not set." . PHP_EOL;
+        exit;
+    }
+
+    if (!is_dir($_SERVER["CRONJOB_TASKS_DIR"])) {
+        echo "Error: Task folder not found." . PHP_EOL;
         exit;
     }
 
@@ -68,4 +67,9 @@ if ($argv[1] == "create") {
     }
     END;
     file_put_contents("$dirtask/$name.php", $scalfold);
+}
+
+if ($argv[1] == "stop") {
+    Worker::down();
+    print "All stopped!" . PHP_EOL;
 }
