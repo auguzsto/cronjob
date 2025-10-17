@@ -6,3 +6,5 @@ services:
       dockerfile: ./.docker/Dockerfile
     volumes:
       - ./:/usr/src/myapp:rw
+    environment:
+      - CRONJOB_TASKS_DIR=/usr/src/myapp/tasks

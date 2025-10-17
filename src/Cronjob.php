@@ -6,22 +6,23 @@ use Auguzsto\Cronjob\Scheduler;
 
 class Cronjob
 {
-    public static function up(string $config): never
+    public static function up(): never
     {
-        $task = json_decode($config);
+        $dirtasks = $_SERVER["CRONJOB_TASKS_DIR"];
         while (true) {
-            $classTasks = scandir($task->pathAboslute);
+            $classTasks = scandir($dirtasks);
             $files = array_diff($classTasks, [".", ".."]);
             
-            foreach ($files as $key => $class) {
-                $classWithoutExtension = str_replace(".php", "", $class);
-                $classNamespace = "\\{$task->namespace}\\$classWithoutExtension";
-                
-                $instance = new $classNamespace();
-                $job = new Job($instance::class, "toScheduler", [new Scheduler()]);
+            foreach ($files as $key => $file) {
+                $include = "$dirtasks/$file";
+                require_once $include;
+
+                $classWithoutExtension = str_replace(".php", "", $file);
+                $job = new Job($classWithoutExtension, "toScheduler", [new Scheduler()]);
+                $job->include($include);
                 $job->execute();
             }
-            sleep(1);
+            sleep(60);
         }
     }
 }

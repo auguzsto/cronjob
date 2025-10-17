@@ -14,8 +14,13 @@ if (!file_exists($autoload)) {
 require_once $autoload;
 
 if ($argv[1] == "start") {
-    $cronjob = json_decode(file_get_contents(__DIR__ . "/../cronjob.json"));
-    $job = new Job(Cronjob::class, "up", [json_encode($cronjob->task)]);
+    if (!is_dir("tasks")) {
+        echo "Before creating a task, initialize the repository." . PHP_EOL;
+        echo "vendor/bin/cronjob init" . PHP_EOL;;
+        exit;
+    }
+
+    $job = new Job(Cronjob::class, "up");
     $job->execute();
     print "All ready!" . PHP_EOL;
 }
@@ -23,4 +28,44 @@ if ($argv[1] == "start") {
 if ($argv[1] == "stop") {
     Worker::down();
     print "All stopped!" . PHP_EOL;
+}
+
+if ($argv[1] == "init") {
+    mkdir("tasks");
+}
+
+if ($argv[1] == "create") {
+    if (!is_dir("tasks")) {
+        echo "Before creating a task, initialize the repository." . PHP_EOL;
+        echo "vendor/bin/cronjob init" . PHP_EOL;;
+        exit;
+    }
+
+    $dirtask = $_SERVER["CRONJOB_TASKS_DIR"];
+    $name = $argv[2];
+    $scalfold = <<<END
+    <?php
+
+    use Auguzsto\Cronjob\TaskInterface;
+    use Auguzsto\Cronjob\SchedulerInterface;
+
+    class $name implements TaskInterface
+    {
+        /**
+         * Schedule
+         * \$scheduler->on("* * * * *", new self);
+         */
+        public static function toScheduler(SchedulerInterface \$scheduler): void 
+        {
+        }
+
+        /**
+         * Implement the task to be performed
+         */
+        public static function onTask(): void
+        {
+        }
+    }
+    END;
+    file_put_contents("$dirtask/$name.php", $scalfold);
 }

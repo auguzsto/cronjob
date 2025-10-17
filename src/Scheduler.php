@@ -93,6 +93,7 @@ class Scheduler implements SchedulerInterface
             return;
         }
 
+        $include = $_SERVER["CRONJOB_TASKS_DIR"] . "/$taskclass.php";
         $schedules = json_decode(file_get_contents($filetask));
         $lastIndex = array_key_last($schedules);
 
@@ -100,6 +101,7 @@ class Scheduler implements SchedulerInterface
             $now = date("Y-m-d H:i");
             if ($schedules[$lastIndex]->next == $now) {
                 $job = new Job($taskclass, "onTask");
+                $job->include($include);
                 $job->execute();
                 $lastIndex = array_key_last($schedules);
                 $schedules[$lastIndex]->process = Process::DONE;
