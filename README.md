@@ -17,7 +17,7 @@ CRONJOB_TASKS_DIR=/example/app/tasks
 ```
 vendor/bin/cronjob create ExampleTask
 ```
-You'll create a PHP file for this task in your folder with a skeleton already in place.
+This command will create a class in your tasks folder with a skeleton already in place.
 
 ```php
 <?php
