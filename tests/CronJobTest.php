@@ -1,5 +1,11 @@
 <?php
 
+use Auguzsto\Cronjob\CronParser;
+use PhpParser\Node;
+use PhpParser\Node\Expr;
+use PhpParser\Node\Stmt;
+use PhpParser\ParserFactory;
+use PhpParser\PrettyPrinter;
 use Auguzsto\Cronjob\Scheduler;
 use PHPUnit\Framework\TestCase;
 
@@ -17,9 +23,16 @@ class CronJobTest extends TestCase
     {
         $bin = file_get_contents(self::BIN);
         $binMock = str_replace(self::CRONJOB_TASKS_DIR, self::CRONJOB_TASKS_DIR_MOCK, $bin);
-        
+
         file_put_contents(self::BIN_MOCK, $binMock);
 
+    }
+
+    public static function tearDownAfterClass(): void
+    {
+        $dirtask = self::VALUE_TASKS_DIR_MOCK;
+        $task = self::TASK_EXAMPLE;
+        unlink("$dirtask/$task.php");
     }
 
     public function testReturnErrorEnvironmentVariableIsNotSetWhenStart(): void
@@ -62,27 +75,85 @@ class CronJobTest extends TestCase
     {
         $bin = self::BIN_MOCK;
         $task = self::TASK_EXAMPLE;
-        $dirtask = SELF::VALUE_TASKS_DIR_MOCK;
+        $dirtask = self::VALUE_TASKS_DIR_MOCK;
         exec("export CRONJOB_TASKS_DIR_MOCK='$dirtask' && php $bin create $task");
 
         $this->assertTrue(file_exists("$dirtask/$task.php"));
     }
 
-    /// TODO
     public function testScheduleTaskForMidnight(): void
     {
         $dirtask = self::VALUE_TASKS_DIR_MOCK;
         $taskExample = self::TASK_EXAMPLE;
         $dirTaskScheduled = self::SCHEDULED_TASK_FOLDER;
+        $cron = "0 0 * * *";
 
         $content = file_get_contents("$dirtask/$taskExample.php");
-        $addSchedule = str_replace("{\n}", "{\n \$scheduler->on(\"0 0 * * *\", new self);\n}", $content);
-        file_put_contents("$dirtask/$taskExample.php",$addSchedule);
-
-        require_once "$dirtask/$taskExample.php";
-        self::TASK_EXAMPLE::toScheduler(new Scheduler());
+        $parser = (new ParserFactory())->createForNewestSupportedVersion();
+        $ast = $parser->parse($content);
         
+        // Adicionando agendador em runtime.
+        foreach ($ast as $node) {
+            if ($node instanceof Stmt\Class_) {
+                foreach ($node->stmts as $stmt) {
+                    if ($stmt instanceof Stmt\ClassMethod && $stmt->name->toString() === 'toScheduler') {
+                        $stmt->stmts = [
+                            new Stmt\Expression(
+                                new Expr\FuncCall(
+                                    new Node\Name('$scheduler->on'),
+                                    [
+                                        new Node\Arg(new Node\Scalar\String_($cron)),
+                                        new Node\Arg(new Expr\New_(new Node\Name('self')))
+                                    ]
+                                )
+                            ),
+                        ];
+                    }
+
+                    if ($stmt instanceof Stmt\ClassMethod && $stmt->name->toString() === 'onTask') {
+                        $stmt->stmts = [
+                            new Stmt\Expression(
+                                new Expr\FuncCall(
+                                    new Node\Name('file_put_contents'),
+                                    [
+                                        new Node\Arg(new Node\Scalar\String_("example_tests.txt")),
+                                        new Node\Arg(new Node\Scalar\String_("testing")),
+                                    ]
+                                )
+                            ),
+                        ];
+                    }
+                }
+            }
+        }
+
+        $printer = new PrettyPrinter\Standard();
+        $newCode = $printer->prettyPrintFile($ast);
+
+        file_put_contents("$dirtask/$taskExample.php", $newCode);
+        require_once "$dirtask/$taskExample.php";
+
+        self::TASK_EXAMPLE::toScheduler(new Scheduler());
         $this->assertTrue(file_exists("$dirTaskScheduled/$taskExample"));
+        
+    }
+
+    public function testNextDateTimeForTaskRun(): void
+    {
+        $dirtask = self::VALUE_TASKS_DIR_MOCK;
+        $taskExample = self::TASK_EXAMPLE;
+        $dirTaskScheduled = self::SCHEDULED_TASK_FOLDER;
+        $cron = "0 0 * * *";
+
+        $cronExpression = new CronParser();
+        $cronExpression->setExpression($cron);
+        $datetime = new DateTime();
+        $datetime->setTimestamp($cronExpression->getNext());
+        $next = $datetime->format("Y-m-d H:i");
+        $scheduled = json_decode(file_get_contents("$dirTaskScheduled/$taskExample"))[0];
+        
+        $this->assertEquals($next, $scheduled->next);
+
     }
 
 }
