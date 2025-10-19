@@ -46,6 +46,30 @@ class Scheduler implements SchedulerInterface
         return $this->task;
     }
 
+    public static function all(string $task): array
+    {
+        $dirscheduled = SchedulerInterface::DIR;
+        $agendas = "$dirscheduled/$task";
+
+        if (!file_exists($agendas)) {
+           return [];
+        }
+
+        $array = json_decode(file_get_contents($agendas));
+        return $array;
+    }
+
+    public static function erros(): string | null
+    {
+        $erroslog = "/tmp/php-job-error.log";
+        if (!file_exists($erroslog)) {
+            return null;
+        }
+
+        $result = file_get_contents($erroslog);
+        return $result;
+    }
+
     public function scheduleTask(): void
     {
         $nextTimestamp = $this->cron->getNext();
