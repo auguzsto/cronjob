@@ -3,7 +3,6 @@ namespace Auguzsto\Cronjob;
 
 use DateTime;
 use Auguzsto\Job\Job;
-use Auguzsto\Cronjob\Process;
 use Auguzsto\Cronjob\CronParser;
 use Auguzsto\Cronjob\TaskInterface;
 use Auguzsto\Cronjob\CronParserInterface;
@@ -14,17 +13,27 @@ class Scheduler implements SchedulerInterface
     private CronParserInterface $cron;
     private TaskInterface $task;
 
-    public function __construct()
-    {
-    }
-
-    public function on(string $cronExpression, TaskInterface $task, CronParserInterface $cron = new CronParser()): void
+    public function __construct(CronParserInterface $cron = new CronParser())
     {
         $this->cron = $cron;
+    }
+
+    public function on(string $cronExpression, TaskInterface $task): void
+    {
         $this->cron->setExpression($cronExpression);
         $this->setTask($task);
         $this->runScheduledTask();
         $this->scheduleTask();
+    }
+
+    public function setCronParser(CronParserInterface $cronParserInterface): void
+    {
+        $this->cron = $cronParserInterface;
+    }
+
+    public function getCronParser(): CronParserInterface
+    {
+        return $this->cron;
     }
 
     public function setTask(TaskInterface $taskInterface): void
@@ -43,8 +52,8 @@ class Scheduler implements SchedulerInterface
         $datetime = new DateTime();
         $datetime->setTimestamp($nextTimestamp);
         $next = $datetime->format("Y-m-d H:i");
+        $dir = self::DIR;
 
-        $dir = __DIR__ . "/.scheduler";
         if (!is_dir($dir)) {
             mkdir($dir);
         }
@@ -55,7 +64,7 @@ class Scheduler implements SchedulerInterface
         $schedule = [
             [
                 "next" => $next,
-                "process" => Process::SCHEDULED
+                "status" => self::STATUS_SCHEDULED
             ]
         ];
 
@@ -69,14 +78,14 @@ class Scheduler implements SchedulerInterface
             $lastIndex = array_key_last($schedules);
             $lastScheduled = $schedules[$lastIndex];
 
-            if ($lastScheduled->process == Process::SCHEDULED) {
+            if ($lastScheduled->status == self::STATUS_SCHEDULED) {
                 return;
             }
 
-            if ($lastScheduled->process == Process::DONE) {
+            if ($lastScheduled->status == self::STATUS_DONE) {
                 array_push($schedules, [
                     "next" => $next,
-                    "process" => "scheduled"
+                    "status" => self::STATUS_SCHEDULED
                 ]);
 
                 file_put_contents($filetasks, json_encode($schedules));
@@ -87,7 +96,8 @@ class Scheduler implements SchedulerInterface
     public function runScheduledTask(): void
     {
         $taskclass = $this->task::class;
-        $filetask = __DIR__ . "/.scheduler/$taskclass";
+        $dir = self::DIR;
+        $filetask = "/$dir/$taskclass";
 
         if (!is_file($filetask)) {
             return;
@@ -97,14 +107,14 @@ class Scheduler implements SchedulerInterface
         $schedules = json_decode(file_get_contents($filetask));
         $lastIndex = array_key_last($schedules);
 
-        if ($schedules[$lastIndex]->process == Process::SCHEDULED) {
+        if ($schedules[$lastIndex]->status == self::STATUS_SCHEDULED) {
             $now = date("Y-m-d H:i");
             if ($schedules[$lastIndex]->next == $now) {
                 $job = new Job($taskclass, "onTask");
                 $job->include($include);
                 $job->execute();
                 $lastIndex = array_key_last($schedules);
-                $schedules[$lastIndex]->process = Process::DONE;
+                $schedules[$lastIndex]->status = self::STATUS_DONE;
                 file_put_contents($filetask, json_encode($schedules));
             }
             

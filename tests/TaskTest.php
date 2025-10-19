@@ -4,22 +4,21 @@ use Auguzsto\Cronjob\Scheduler;
 use DateTime;
 use PHPUnit\Framework\TestCase;
 use Auguzsto\Cronjob\CronParser;
-use Auguzsto\Cronjob\TaskInterface;
-use Auguzsto\Cronjob\SchedulerInterface;
 
 class TaskTest extends TestCase
 {
     private const string SCHEDULED_TASK_FOLDER = __DIR__ . "/../src/.scheduler";
+   private const string CRONJOB_TASKS_DIR = "CRONJOB_TASKS_DIR";
 
     public function testTaskScheduling(): void
     {
         $dirScheduled = self::SCHEDULED_TASK_FOLDER;
-        require_once __DIR__ . "/Mocks/ExampleTask.php";
+        $dir = $_SERVER[self::CRONJOB_TASKS_DIR];
+        require_once "$dir/ExampleTask.php";
         ExampleTask::toScheduler(new Scheduler());
 
         $taskScheduled = file_exists("$dirScheduled/ExampleTask");
         $this->assertTrue($taskScheduled);
-
     }
 
     public function testNextDateTimeForTaskRun(): void
@@ -36,6 +35,5 @@ class TaskTest extends TestCase
         $scheduled = json_decode(file_get_contents("$dirTaskScheduled/$taskExample"))[0];
         
         $this->assertEquals($next, $scheduled->next);
-
     }
 }
