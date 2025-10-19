@@ -54,7 +54,9 @@ onTask() is the method that will be executed.
 ```
 vendor/bin/cronjob start
 ```
+Done! Your scheduling service is up and running.
 
+# Commands
 ## Turn off the service
 ```
 vendor/bin/cronjob stop
