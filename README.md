@@ -54,3 +54,18 @@ onTask() is the method that will be executed.
 ```
 vendor/bin/cronjob start
 ```
+
+## Turn off the service
+```
+vendor/bin/cronjob stop
+```
+
+## View schedules by task
+```
+vendor/bin/cronjob schedules ExampleTask
+```
+
+## View all scheduler erros
+```
+vendor/bin/cronjob erros
+```
