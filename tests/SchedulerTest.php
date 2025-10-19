@@ -13,6 +13,10 @@ class SchedulerTest extends TestCase
     public static function setUpBeforeClass(): void
     {
         $dir = SchedulerInterface::DIR;
+        if (!is_dir($dir)) {
+            mkdir($dir);
+        }
+        
         $files = array_diff(scandir($dir), [".", ".."]);
         foreach ($files as $file) {
             unlink("$dir/$file");
