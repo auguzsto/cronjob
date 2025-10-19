@@ -1,0 +1,26 @@
+name: Run tests
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: php-actions/composer@v6
+
+      - name: PHPUnit Tests
+        uses: php-actions/phpunit@master
+        env:
+            CRONJOB_TASKS_DIR: ${{ github.workspace }}/tasks
+        with:
+          php_version: 8.3
+          version: 12
+          bootstrap: vendor/autoload.php
+          configuration: phpunit.xml
+          args: tests
