@@ -76,7 +76,7 @@ if ($argv[1] == "stop") {
     print "All stopped!" . PHP_EOL;
 }
 
-if ($argv[1] == "agendas") {
+if ($argv[1] == "schedules") {
     $task = $argv[2];
     $results = Scheduler::all($task);
 

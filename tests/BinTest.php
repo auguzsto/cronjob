@@ -76,7 +76,7 @@ class BinTest extends TestCase
     public function testReturnErrorTaskNotFoundInSchedulerWhenSeeAgendasByTaskName(): void
     {
         $bin = self::BIN;
-        exec("php $bin agendas 'Name of a task that does not exist'", $output);
+        exec("php $bin schedules 'Name of a task that does not exist'", $output);
 
         $this->assertEquals("Name of a task that does not exist not found in scheduler.", $output[0]);
     }
