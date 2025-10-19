@@ -9,7 +9,7 @@ use Auguzsto\Cronjob\SchedulerInterface;
 
 class TaskTest extends TestCase
 {
-    private const string SCHEDULED_TASK_FOLDER = "/usr/src/myapp/src/.scheduler";
+    private const string SCHEDULED_TASK_FOLDER = __DIR__ . "/../src/.scheduler";
 
     public function testTaskScheduling(): void
     {

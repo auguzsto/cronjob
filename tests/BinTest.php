@@ -4,11 +4,11 @@ use PHPUnit\Framework\TestCase;
 
 class BinTest extends TestCase
 {
-    private const string BIN = "/usr/src/myapp/bin/cronjob";
-    private const string BIN_MOCK = "/usr/src/myapp/bin/cronjob.mock";
+    private const string BIN = __DIR__ . "/../bin/cronjob";
+    private const string BIN_MOCK = __DIR__ . "/../bin/cronjob.mock";
     private const string CRONJOB_TASKS_DIR = "CRONJOB_TASKS_DIR";
     private const string CRONJOB_TASKS_DIR_MOCK = "CRONJOB_TASKS_DIR_MOCK";
-    private const string VALUE_TASKS_DIR_MOCK = "/usr/src/myapp/tests/Mocks/Tasks";
+    private const string VALUE_TASKS_DIR_MOCK = __DIR__ . "/Mocks/Tasks";
     private const string TASK_EXAMPLE = "ExampleTask";
 
     public function setUp(): void
