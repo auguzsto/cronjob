@@ -73,4 +73,19 @@ class BinTest extends TestCase
         $this->assertTrue(file_exists("$dirtask/$task.php"));
     }
 
+    public function testReturnErrorTaskNotFoundInSchedulerWhenSeeAgendasByTaskName(): void
+    {
+        $bin = self::BIN;
+        exec("php $bin agendas 'Name of a task that does not exist'", $output);
+
+        $this->assertEquals("Name of a task that does not exist not found in scheduler.", $output[0]);
+    }
+
+    public function testReturnsNullIfThereAreNoLogErrors(): void
+    {
+        $bin = self::BIN;
+        exec("php $bin erros", $output);
+        $this->assertEmpty($output);
+    }
+
 }
