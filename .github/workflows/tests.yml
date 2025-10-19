@@ -17,7 +17,7 @@ jobs:
       - name: PHPUnit Tests
         uses: php-actions/phpunit@master
         env:
-            CRONJOB_TASKS_DIR: ${{ github.workspace }}/tasks
+            CRONJOB_TASKS_DIR: ${{ github.workspace }}/tests/Mocks/Tasks
         with:
           php_version: 8.3
           version: 12
