@@ -3,7 +3,7 @@
     "description": "(PHP Cron) Asynchronous task scheduler without the need for extensions.",
     "type": "library",
     "license": "MIT",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "autoload": {
         "psr-4": {
             "Auguzsto\\Cronjob\\": "src/",
