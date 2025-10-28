@@ -15,8 +15,6 @@ class Cronjob
             
             foreach ($files as $key => $file) {
                 $include = "$dirtasks/$file";
-                require_once $include;
-
                 $classWithoutExtension = str_replace(".php", "", $file);
                 $job = new Job($classWithoutExtension, "toScheduler", [new Scheduler()]);
                 $job->include($include);
