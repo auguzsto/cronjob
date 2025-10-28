@@ -1,6 +1,6 @@
 {
     "name": "auguzsto/cronjob",
-    "description": "Run scheduled tasks.",
+    "description": "(PHP Cron) Asynchronous task scheduler without the need for extensions.",
     "type": "library",
     "license": "MIT",
     "version": "0.0.5",
