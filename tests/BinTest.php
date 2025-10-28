@@ -84,8 +84,15 @@ class BinTest extends TestCase
     public function testReturnsNullIfThereAreNoLogErrors(): void
     {
         $bin = self::BIN;
-        exec("php $bin erros", $output);
+        exec("php $bin errors", $output);
         $this->assertEmpty($output);
+    }
+
+    public function testReturnThatCommandDoesntExist(): void
+    {
+        $bin = self::BIN;
+        exec("php $bin this command dont exists", $output);
+        $this->assertEquals("Oops... Looks like you typed something wrong. That command doesn't exist.", $output[0]);
     }
 
 }

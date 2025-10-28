@@ -16,5 +16,5 @@ interface SchedulerInterface
     public function getCronParser(): CronParserInterface;
     public function on(string $cronExpression, TaskInterface $task): void;
     public static function all(string $task): array;
-    public static function erros(): string | null;
+    public static function errors(): string | null;
 }

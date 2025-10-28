@@ -59,7 +59,7 @@ class Scheduler implements SchedulerInterface
         return $array;
     }
 
-    public static function erros(): string | null
+    public static function errors(): string | null
     {
         $erroslog = "/tmp/php-job-error.log";
         if (!file_exists($erroslog)) {

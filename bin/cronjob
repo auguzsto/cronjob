@@ -1,7 +1,6 @@
 <?php
 
 use Auguzsto\Cronjob\Scheduler;
-use Auguzsto\Cronjob\SchedulerInterface;
 use Auguzsto\Job\Job;
 use Auguzsto\Job\Worker;
 use Auguzsto\Cronjob\Cronjob;
@@ -15,31 +14,47 @@ if (!file_exists($autoload)) {
 
 require_once $autoload;
 
-if ($argv[1] == "start") {
+$commands = [
+    1 => "start",
+    2 => "create",
+    3 => "stop",
+    4 => "schedules",
+    5 => "errors"
+];
+
+$input = $argv[1];
+if (array_search($input, $commands, true)) {
+    $output = $argv[1]($argv);
+    echo $output . PHP_EOL;
+    exit;
+} else {
+    echo "Oops... Looks like you typed something wrong. That command doesn't exist." . PHP_EOL;
+    exit;
+}
+
+function start(array $argv = []): string
+{
     if (empty($_SERVER["CRONJOB_TASKS_DIR"])) {
-        echo "Error: Environment variable 'CRONJOB_TASKS_DIR' is not set." . PHP_EOL;
-        exit;
+        return "Error: Environment variable 'CRONJOB_TASKS_DIR' is not set.";
     }
 
     if (!is_dir($_SERVER["CRONJOB_TASKS_DIR"])) {
-        echo "Error: Task folder not found." . PHP_EOL;
-        exit;
+        return "Error: Task folder not found.";
     }
 
     $job = new Job(Cronjob::class, "up");
     $job->execute();
-    print "All ready!" . PHP_EOL;
+    return "All ready!";
 }
 
-if ($argv[1] == "create") {
+function create(array $argv = []): string
+{
     if (empty($_SERVER["CRONJOB_TASKS_DIR"])) {
-        echo "Error: Environment variable 'CRONJOB_TASKS_DIR' is not set." . PHP_EOL;
-        exit;
+        return "Error: Environment variable 'CRONJOB_TASKS_DIR' is not set.";
     }
 
     if (!is_dir($_SERVER["CRONJOB_TASKS_DIR"])) {
-        echo "Error: Task folder not found." . PHP_EOL;
-        exit;
+        return "Error: Task folder not found.";
     }
 
     $dirtask = $_SERVER["CRONJOB_TASKS_DIR"];
@@ -69,29 +84,33 @@ if ($argv[1] == "create") {
     }
     END;
     file_put_contents("$dirtask/$name.php", $scalfold);
+    return "Task $name created: $dirtask/$name.php";
 }
 
-if ($argv[1] == "stop") {
+function stop(array $argv = []): string
+{
     Worker::down();
-    print "All stopped!" . PHP_EOL;
+    return "All stopped!";
 }
 
-if ($argv[1] == "schedules") {
+function schedules(array $argv = []): string
+{
     $task = $argv[2];
     $results = Scheduler::all($task);
 
     if (empty($results)) {
-        echo "$task not found in scheduler." . PHP_EOL;
-        exit;
+        return "$task not found in scheduler.";
     }
 
-    print_r($results);
+    return json_encode($results);
 }
 
-if ($argv[1] == "erros") {
-    if (Scheduler::erros() == null) {
+function errors(array $argv = []): string
+{
+    $errors = Scheduler::errors();
+    if ($errors == null) {
         exit;
     }
-    
-    print_r(Scheduler::erros() . PHP_EOL);
+
+    return $errors;
 }
