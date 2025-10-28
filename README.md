@@ -67,7 +67,7 @@ vendor/bin/cronjob stop
 vendor/bin/cronjob schedules ExampleTask
 ```
 
-## View all scheduler erros
+## View all scheduler errors
 ```
-vendor/bin/cronjob erros
+vendor/bin/cronjob errros
 ```
