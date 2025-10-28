@@ -85,35 +85,44 @@ class Scheduler implements SchedulerInterface
         $taskclass = $this->task::class;
         $filetasks = "$dir/$taskclass";
 
-        $schedule = [
-            [
-                "next" => $next,
-                "status" => self::STATUS_SCHEDULED
-            ]
-        ];
-
         if (!is_file($filetasks)) {
+            $schedule = [
+                [
+                    "next" => $next,
+                    "status" => self::STATUS_SCHEDULED
+                ]
+            ];
             file_put_contents($filetasks, json_encode($schedule));
             return;
         }
 
-        if (is_file($filetasks)) {
-            $schedules = json_decode(file_get_contents($filetasks));
-            $lastIndex = array_key_last($schedules);
-            $lastScheduled = $schedules[$lastIndex];
+        $schedules = json_decode(file_get_contents($filetasks));
+        $lastIndex = array_key_last($schedules);
+        $lastScheduled = $schedules[$lastIndex];
+        $now = date("Y-m-d H:i");
 
-            if ($lastScheduled->status == self::STATUS_SCHEDULED) {
-                return;
-            }
+        if ($lastScheduled->status == self::STATUS_SCHEDULED && $now < $lastScheduled->next) {
+            return;
+        }
 
-            if ($lastScheduled->status == self::STATUS_DONE) {
-                array_push($schedules, [
-                    "next" => $next,
-                    "status" => self::STATUS_SCHEDULED
-                ]);
+        if ($lastScheduled->status == self::STATUS_SCHEDULED && $now > $lastScheduled->next) {
+            $schedules[$lastIndex]->status = self::STATUS_RESCHEDULED;
+            array_push($schedules, [
+                "next" => $next,
+                "status" => self::STATUS_SCHEDULED
+            ]);
 
-                file_put_contents($filetasks, json_encode($schedules));
-            }
+            file_put_contents($filetasks, json_encode($schedules));
+            return;
+        }
+
+        if ($lastScheduled->status == self::STATUS_DONE) {
+            array_push($schedules, [
+                "next" => $next,
+                "status" => self::STATUS_SCHEDULED
+            ]);
+
+            file_put_contents($filetasks, json_encode($schedules));
         }
     }
 
@@ -130,18 +139,16 @@ class Scheduler implements SchedulerInterface
         $include = $_SERVER["CRONJOB_TASKS_DIR"] . "/$taskclass.php";
         $schedules = json_decode(file_get_contents($filetask));
         $lastIndex = array_key_last($schedules);
+        $now = date("Y-m-d H:i");
+        $isRun = $schedules[$lastIndex]->status == self::STATUS_SCHEDULED && $schedules[$lastIndex]->next == $now;
 
-        if ($schedules[$lastIndex]->status == self::STATUS_SCHEDULED) {
-            $now = date("Y-m-d H:i");
-            if ($schedules[$lastIndex]->next == $now) {
-                $job = new Job($taskclass, "onTask");
-                $job->include($include);
-                $job->execute();
-                $lastIndex = array_key_last($schedules);
-                $schedules[$lastIndex]->status = self::STATUS_DONE;
-                file_put_contents($filetask, json_encode($schedules));
-            }
-            
+        if ($isRun) {
+            $job = new Job($taskclass, "onTask");
+            $job->include($include);
+            $job->execute();
+            $lastIndex = array_key_last($schedules);
+            $schedules[$lastIndex]->status = self::STATUS_DONE;
+            file_put_contents($filetask, json_encode($schedules));
         }
     }
 }

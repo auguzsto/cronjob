@@ -7,6 +7,7 @@ interface SchedulerInterface
 {
     public const string DIR = __DIR__ . "/.scheduler";
     public const string STATUS_SCHEDULED = "scheduled";
+    public const string STATUS_RESCHEDULED = "rescheduled";
     public const string STATUS_DONE = "done";
     public function setTask(TaskInterface $taskInterface): void;
     public function getTask(): TaskInterface;

@@ -90,4 +90,30 @@ class SchedulerTest extends TestCase
         
         $this->assertEquals($schedule->status, SchedulerInterface::STATUS_SCHEDULED);
     }
+
+    public function testRescheduleOverdueTask(): void
+    {
+        $CRONJOB_TASKS_DIR = $_SERVER[self::CRONJOB_TASKS_DIR];
+        require_once "$CRONJOB_TASKS_DIR/ConsumerTask.php";
+        
+        $dir = SchedulerInterface::DIR;
+        $task = new ConsumerTask();
+        $schedulerMock = new SchedulerMock();
+        $taskName = $task::class;
+        $agendas = json_decode(file_get_contents("$dir/$taskName"));
+        $tomorrow = new DateTime("yesterday");
+        $agendas[1]->next = date($tomorrow->format("Y-m-d H:i"));
+        file_put_contents("$dir/$taskName", json_encode($agendas));
+        
+        $schedulerMock->scheduler->setTask($task);
+        $schedulerMock->scheduler->getCronParser()->setExpression("* * * * *");
+        $schedulerMock->scheduler->scheduleTask();
+
+        $agendas = json_decode(file_get_contents("$dir/$taskName"));
+        $reschedule = $agendas[1];
+        $schedule = $agendas[2];
+
+        $this->assertEquals($reschedule->status, SchedulerInterface::STATUS_RESCHEDULED);
+        $this->assertEquals($schedule->status, SchedulerInterface::STATUS_SCHEDULED);
+    }
 }
