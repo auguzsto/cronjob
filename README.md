@@ -1,3 +1,6 @@
+## About
+(PHP Cron) Asynchronous task scheduler without the need for extensions. Written in PHP for PHP.
+
 ## Setting up
 Install package
 ```
