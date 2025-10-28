@@ -69,5 +69,5 @@ vendor/bin/cronjob schedules ExampleTask
 
 ## View all scheduler errors
 ```
-vendor/bin/cronjob errros
+vendor/bin/cronjob errors
 ```
