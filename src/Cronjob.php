@@ -13,14 +13,14 @@ class Cronjob
             $classTasks = scandir($dirtasks);
             $files = array_diff($classTasks, [".", ".."]);
             
-            foreach ($files as $key => $file) {
+            foreach ($files as $file) {
                 $include = "$dirtasks/$file";
                 $classWithoutExtension = str_replace(".php", "", $file);
                 $job = new Job($classWithoutExtension, "toScheduler", [new Scheduler()]);
                 $job->include($include);
                 $job->execute();
             }
-            sleep(60);
+            sleep(45);
         }
     }
 }
